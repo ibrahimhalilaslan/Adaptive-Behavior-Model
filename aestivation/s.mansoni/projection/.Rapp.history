@@ -1,0 +1,79 @@
+# upload prevalence data #
+mpb_africa <- read.csv(file = 'simulation_africa_time_series_mpb.csv')#
+head(mpb_africa)#
+#
+# Load required libraries#
+library(maps)#
+library(ggplot2)#
+library(sf)#
+library(tidyr)#
+library(stars)#
+library(sfheaders)#
+library(scales)#
+#
+# Get world map data#
+world_map <- map_data("world")#
+#
+# Filter data for Africa#
+africa_map <- subset(world_map, region %in% c("Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Western Sahara",#
+                                              "Burundi", "Cameroon", "Cape Verde", "Central African Republic",#
+                                              "Chad", "Comoros", "Democratic Republic of the Congo", "Republic of Congo",#
+                                              "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", #
+                                              "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", #
+                                              "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", #
+                                              "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", #
+                                              "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", #
+                                              "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", #
+                                              "South Sudan", "Sudan", "Tanzania", "Togo", "Tunisia", "Uganda", #
+                                              "Zambia", "Zimbabwe"))#
+africa_poly <- st_union(sfheaders::sf_polygon(africa_map, x = "long", y = "lat", polygon_id = "group"))#
+africa_poly <- st_set_crs(africa_poly, 4326)#
+# upload prevalence data #
+df_africa_mask <- read.csv(file = 'africa_mask_v1.csv')#
+df_africa_mask <- replace_na(complete(df_africa_mask, lon, lat), list(grid_code = 0))#
+#
+df_africa_mpb <- data.frame(Longitude = mpb_africa$longitude, Latitude = mpb_africa$latitude, #
+                                MPB = mpb_africa$MPB)#
+rast <- st_set_crs(st_as_stars(df_africa_mpb, coords = c("Longitude", "Latitude")), 4326)#
+mask_rast <- st_set_crs(st_as_stars(df_africa_mask, coords = c("lat", "lon")), 4326)#
+mask_rast <- st_warp(mask_rast, rast)#
+rast$MPB[mask_rast$grid_code == 1] <- NA#
+rast <- rast[africa_poly]#
+# Define the function to convert mean parqsite burden to the prevalence #
+PairPrevalence <- function(M, k) {#
+  p = 1 - 2* (1+M/(2*k))^(-k) + (1+M/k)^(-k)    # fraction of humans with at least 2 parasites#
+  return(p)#
+}#
+#
+#convert mean parasite burden to prevalence #
+rast$prevalence <- PairPrevalence(k = 0.0105*rast$MPB^0.52, M = rast$MPB)#
+# Plot the map with intensity of color based on value#
+pdf(file = "s_haematobium_africa_prevalence.pdf", width = 8, height = 8)#
+ggplot() +#
+  geom_stars(aes(fill = prevalence), data = rast) + #
+  scale_fill_gradientn(colors = c("white", "gold", "red"), na.value = "white") +#
+  geom_map(data = africa_map, map = africa_map,#
+           aes(map_id = region),#
+           fill = NA, color = "black", size = 0.5) + #
+  labs(#title = expression(paste(italic(S.haematobium) )), #
+       fill = "Prevalence") +  # Add title and color legend title#
+  theme_void() +#
+  coord_sf() +#
+  theme(  # Adjust plot margins#
+   plot.title =  element_text(hjust = 0.5, face = "bold", size = 27), #
+        legend.position = c(0.3, 0.2)) # Center plot title #
+dev.off()#
+############# Plot the regions schistosomiasis not exist ##########
+#
+# Filter out Africa#
+africa_map <- subset(world_map, region == "Africa")#
+#
+mpb_africa <- mpb_africa %>%#
+  mutate(Epsilon = if_else(mpb_africa$Epsilon > .05 & mpb_africa$MAT < 28, 0, Epsilon))#
+# Plot Africa#
+ggplot() +#
+  geom_polygon(data = africa_map, aes(x = long, y = lat, group = group), fill = "lightgrey") +#
+  geom_point(data = mpb_africa, aes(x = Longitude, y = Latitude, color = Epsilon), size = 3) +#
+  scale_color_gradient(low = "white", high = "red") +  # Choose your color scale#
+  labs(title = "Africa with Data Points", x = "Longitude", y = "Latitude", color = "Value") +#
+  theme(legend.position = "bottom")

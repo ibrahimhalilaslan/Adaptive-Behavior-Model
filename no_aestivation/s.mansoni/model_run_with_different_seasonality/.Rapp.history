@@ -1,0 +1,634 @@
+load("/Users/ibrahimaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/seasonal_model/2024_april_23rd_ver_R/no_eastivation/s.mansoni/model_run_with_different_seasonality/april_30.RData")
+library(ggplot2)#
+#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_mpb.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+   ylim = c(0, 115))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S.mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+# Define the function to convert mean parqsite burden to the prevalence #
+PairPrevalence <- function(M, k) {#
+  p = 1 - 2* (1+M/(2*k))^(-k) + (1+M/k)^(-k)    # fraction of humans with at least 2 parasites#
+  return(p)#
+}#
+#
+#convert mean parasite burden to prevalence #
+for (i in 1:length(outputs_1[5,])){#
+    outputs_1[5,i] <- PairPrevalence(k = 0.0105*outputs_1[5,i]^0.52, M = outputs_1[5,i])#
+    outputs_2[5,i] <- PairPrevalence(k = 0.0105*outputs_2[5,i]^0.52, M = outputs_2[5,i])#
+    outputs_3[5,i] <- PairPrevalence(k = 0.0105*outputs_3[5,i]^0.52, M = outputs_3[5,i])#
+      }#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S.mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "poster_seasonal_prevalence.pdf", width = 8, height = 6.5)#
+par(mar=c(6, 6, 1, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+text(x = temperature[which.max(outputs_1[5,])], y = 0, labels = '^', col = "blue", cex = 1) #
+text(x = temperature[which.max(outputs_1[5,])], y = 0.02, labels = temperature[which.max(outputs_1[5,])], col = "blue", cex = .7)#
+#
+text(x = temperature[which.max(outputs_2[5,])], y = 0, labels = '^', col = "orange", cex = 1) #
+text(x = temperature[which.max(outputs_2[5,])], y = 0.02, labels = temperature[which.max(outputs_2[5,])], col = "orange", cex = .7)#
+#
+text(x = temperature[which.max(outputs_3[5,])], y = 0, labels = '^', col = "red", cex = 1) #
+text(x = temperature[which.max(outputs_3[5,])], y = 0.02, labels = temperature[which.max(outputs_3[5,])], col = "red", cex = .7)#
+legend(x = 10, y = 0.64,  legend =  "No seasonality", bty = "n", cex = 1.5, text.col = "blue")#
+#legend(x = 16.5, y = 0.64, legend =  round(temperature[which.max(out_come_season[1,])],4), cex = 1.5, bty = "n", text.col = 1)#
+legend(x = 10, y = 0.61,  legend =  "Mild seasonality", bty = "n", cex = 1.5, text.col = "orange")#
+#legend(x = 16.5, y = 0.61, legend =  round(temperature[which.max(out_come_season[2,])],4), cex = 1.5, bty = "n", text.col = 2)#
+legend(x = 10, y = 0.58,  legend =  "Severe seasonality", bty = "n", cex = 1.5, text.col = "red")#
+#legend(x = 16.5, y = 0.58, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#legend(x = 13.2, y = 128,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 4)#
+#legend(x = 17.5, y = 128, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 4)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+#mtext(text = expression(italic(S.mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+library(ggplot2)#
+#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_mpb.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+   ylim = c(0, 115))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+# Define the function to convert mean parqsite burden to the prevalence #
+PairPrevalence <- function(M, k) {#
+  p = 1 - 2* (1+M/(2*k))^(-k) + (1+M/k)^(-k)    # fraction of humans with at least 2 parasites#
+  return(p)#
+}#
+#
+#convert mean parasite burden to prevalence #
+for (i in 1:length(outputs_1[5,])){#
+    outputs_1[5,i] <- PairPrevalence(k = 0.0105*outputs_1[5,i]^0.52, M = outputs_1[5,i])#
+    outputs_2[5,i] <- PairPrevalence(k = 0.0105*outputs_2[5,i]^0.52, M = outputs_2[5,i])#
+    outputs_3[5,i] <- PairPrevalence(k = 0.0105*outputs_3[5,i]^0.52, M = outputs_3[5,i])#
+      }#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "poster_seasonal_prevalence.pdf", width = 8, height = 6.5)#
+par(mar=c(6, 6, 1, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+text(x = temperature[which.max(outputs_1[5,])], y = 0, labels = '^', col = "blue", cex = 1) #
+text(x = temperature[which.max(outputs_1[5,])], y = 0.02, labels = temperature[which.max(outputs_1[5,])], col = "blue", cex = .7)#
+#
+text(x = temperature[which.max(outputs_2[5,])], y = 0, labels = '^', col = "orange", cex = 1) #
+text(x = temperature[which.max(outputs_2[5,])], y = 0.02, labels = temperature[which.max(outputs_2[5,])], col = "orange", cex = .7)#
+#
+text(x = temperature[which.max(outputs_3[5,])], y = 0, labels = '^', col = "red", cex = 1) #
+text(x = temperature[which.max(outputs_3[5,])], y = 0.02, labels = temperature[which.max(outputs_3[5,])], col = "red", cex = .7)#
+legend(x = 10, y = 0.64,  legend =  "No seasonality", bty = "n", cex = 1.5, text.col = "blue")#
+#legend(x = 16.5, y = 0.64, legend =  round(temperature[which.max(out_come_season[1,])],4), cex = 1.5, bty = "n", text.col = 1)#
+legend(x = 10, y = 0.61,  legend =  "Mild seasonality", bty = "n", cex = 1.5, text.col = "orange")#
+#legend(x = 16.5, y = 0.61, legend =  round(temperature[which.max(out_come_season[2,])],4), cex = 1.5, bty = "n", text.col = 2)#
+legend(x = 10, y = 0.58,  legend =  "Severe seasonality", bty = "n", cex = 1.5, text.col = "red")#
+#legend(x = 16.5, y = 0.58, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#legend(x = 13.2, y = 128,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 4)#
+#legend(x = 17.5, y = 128, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 4)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+#mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+load("/Users/ibrahimaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/seasonal_model/2024_april_23rd_ver_R/no_eastivation/s.mansoni/model_run_with_different_seasonality/april_30.RData")
+library(ggplot2)#
+#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_mpb.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+   ylim = c(0, 115))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+# Define the function to convert mean parqsite burden to the prevalence #
+PairPrevalence <- function(M, k) {#
+  p = 1 - 2* (1+M/(2*k))^(-k) + (1+M/k)^(-k)    # fraction of humans with at least 2 parasites#
+  return(p)#
+}#
+#
+#convert mean parasite burden to prevalence #
+for (i in 1:length(outputs_1[5,])){#
+    outputs_1[5,i] <- PairPrevalence(k = 0.0105*outputs_1[5,i]^0.52, M = outputs_1[5,i])#
+    outputs_2[5,i] <- PairPrevalence(k = 0.0105*outputs_2[5,i]^0.52, M = outputs_2[5,i])#
+    outputs_3[5,i] <- PairPrevalence(k = 0.0105*outputs_3[5,i]^0.52, M = outputs_3[5,i])#
+      }#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "poster_seasonal_prevalence.pdf", width = 8, height = 6.5)#
+par(mar=c(6, 6, 1, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+text(x = temperature[which.max(outputs_1[5,])], y = 0, labels = '^', col = "blue", cex = 1) #
+text(x = temperature[which.max(outputs_1[5,])], y = 0.02, labels = temperature[which.max(outputs_1[5,])], col = "blue", cex = .7)#
+#
+text(x = temperature[which.max(outputs_2[5,])], y = 0, labels = '^', col = "orange", cex = 1) #
+text(x = temperature[which.max(outputs_2[5,])], y = 0.02, labels = temperature[which.max(outputs_2[5,])], col = "orange", cex = .7)#
+#
+text(x = temperature[which.max(outputs_3[5,])], y = 0, labels = '^', col = "red", cex = 1) #
+text(x = temperature[which.max(outputs_3[5,])], y = 0.02, labels = temperature[which.max(outputs_3[5,])], col = "red", cex = .7)#
+legend(x = 10, y = 0.64,  legend =  "No seasonality", bty = "n", cex = 1.5, text.col = "blue")#
+#legend(x = 16.5, y = 0.64, legend =  round(temperature[which.max(out_come_season[1,])],4), cex = 1.5, bty = "n", text.col = 1)#
+legend(x = 10, y = 0.61,  legend =  "Mild seasonality", bty = "n", cex = 1.5, text.col = "orange")#
+#legend(x = 16.5, y = 0.61, legend =  round(temperature[which.max(out_come_season[2,])],4), cex = 1.5, bty = "n", text.col = 2)#
+legend(x = 10, y = 0.58,  legend =  "Severe seasonality", bty = "n", cex = 1.5, text.col = "red")#
+#legend(x = 16.5, y = 0.58, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#legend(x = 13.2, y = 128,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 4)#
+#legend(x = 17.5, y = 128, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 4)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+#mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+dev.off()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S.mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(italic(S.mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(mansoni))), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+load("/Users/ibrahimaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/seasonal_model/2024_april_23rd_ver_R/no_eastivation/s.haematobium/model_run_with_different_seasonality/april__30.RData")
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_mpb.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 105))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 111,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 19, y = 111, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 107,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 19, y = 107, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 103,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 19, y = 103, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+#
+# Define the function to convert mean parqsite burden to the prevalence #
+PairPrevalence <- function(M, k) {#
+  p = 1 - 2* (1+M/(2*k))^(-k) + (1+M/k)^(-k)    # fraction of humans with at least 2 parasites#
+  return(p)#
+}#
+#
+#convert mean parasite burden to prevalence #
+for (i in 1:length(outputs_1[5,])){#
+  outputs_1[5,i] <- PairPrevalence(k = 0.0105*outputs_1[5,i]^0.52, M = outputs_1[5,i])#
+  outputs_2[5,i] <- PairPrevalence(k = 0.0105*outputs_2[5,i]^0.52, M = outputs_2[5,i])#
+  outputs_3[5,i] <- PairPrevalence(k = 0.0105*outputs_3[5,i]^0.52, M = outputs_3[5,i])#
+}#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 0.6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 111,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 19, y = 111, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 107,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 19, y = 107, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 103,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 19, y = 103, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+get.wd()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 120,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 18, y = 120, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 115,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 18.5, y = 115, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 110,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 18.5, y = 110, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(mansoni))), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "poster_seasonal_prevalence.pdf", width = 8, height = 6.5)#
+par(mar=c(6, 6, 1, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     ylim = c(0, .6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+text(x = temperature[which.max(outputs_1[5,])], y = 0, labels = '^', col = "blue", cex = 1) #
+text(x = temperature[which.max(outputs_1[5,])], y = 0.02, labels = temperature[which.max(outputs_1[5,])], col = "blue", cex = .7)#
+#
+text(x = temperature[which.max(outputs_2[5,])], y = 0, labels = '^', col = "orange", cex = 1) #
+text(x = temperature[which.max(outputs_2[5,])], y = 0.02, labels = temperature[which.max(outputs_2[5,])], col = "orange", cex = .7)#
+#
+text(x = temperature[which.max(outputs_3[5,])], y = 0, labels = '^', col = "red", cex = 1) #
+text(x = temperature[which.max(outputs_3[5,])], y = 0.02, labels = temperature[which.max(outputs_3[5,])], col = "red", cex = .7)#
+legend(x = 10, y = 0.64,  legend =  "No seasonality", bty = "n", cex = 1.5, text.col = "blue")#
+#legend(x = 16.5, y = 0.64, legend =  round(temperature[which.max(out_come_season[1,])],4), cex = 1.5, bty = "n", text.col = 1)#
+legend(x = 10, y = 0.61,  legend =  "Mild seasonality", bty = "n", cex = 1.5, text.col = "orange")#
+#legend(x = 16.5, y = 0.61, legend =  round(temperature[which.max(out_come_season[2,])],4), cex = 1.5, bty = "n", text.col = 2)#
+legend(x = 10, y = 0.58,  legend =  "Severe seasonality", bty = "n", cex = 1.5, text.col = "red")#
+#legend(x = 16.5, y = 0.58, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#legend(x = 13.2, y = 128,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 4)#
+#legend(x = 17.5, y = 128, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 4)#
+#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+#mtext(text = expression(italic(S. mansoni)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+load("/Users/ibrahimaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/seasonal_model/2024_april_23rd_ver_R/no_eastivation/s.haematobium/model_run_with_different_seasonality/april__30.RData")
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_mpb.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 105))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 111,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 19, y = 111, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 107,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 19, y = 107, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 103,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 19, y = 103, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+#
+# Define the function to convert mean parqsite burden to the prevalence #
+PairPrevalence <- function(M, k) {#
+  p = 1 - 2* (1+M/(2*k))^(-k) + (1+M/k)^(-k)    # fraction of humans with at least 2 parasites#
+  return(p)#
+}#
+#
+#convert mean parasite burden to prevalence #
+for (i in 1:length(outputs_1[5,])){#
+  outputs_1[5,i] <- PairPrevalence(k = 0.0105*outputs_1[5,i]^0.52, M = outputs_1[5,i])#
+  outputs_2[5,i] <- PairPrevalence(k = 0.0105*outputs_2[5,i]^0.52, M = outputs_2[5,i])#
+  outputs_3[5,i] <- PairPrevalence(k = 0.0105*outputs_3[5,i]^0.52, M = outputs_3[5,i])#
+}#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 0.6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 111,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 19, y = 111, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 107,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 19, y = 107, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 103,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 19, y = 103, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+load("/Users/ibrahimaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/seasonal_model/2024_april_23rd_ver_R/no_eastivation/s.haematobium/model_run_with_different_seasonality/april__30.RData")
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_mpb.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 105))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 111,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 19, y = 111, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 107,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 19, y = 107, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 103,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 19, y = 103, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+#
+dev.off()#
+#
+# Define the function to convert mean parqsite burden to the prevalence #
+PairPrevalence <- function(M, k) {#
+  p = 1 - 2* (1+M/(2*k))^(-k) + (1+M/k)^(-k)    # fraction of humans with at least 2 parasites#
+  return(p)#
+}#
+#
+#convert mean parasite burden to prevalence #
+for (i in 1:length(outputs_1[5,])){#
+  outputs_1[5,i] <- PairPrevalence(k = 0.0105*outputs_1[5,i]^0.52, M = outputs_1[5,i])#
+  outputs_2[5,i] <- PairPrevalence(k = 0.0105*outputs_2[5,i]^0.52, M = outputs_2[5,i])#
+  outputs_3[5,i] <- PairPrevalence(k = 0.0105*outputs_3[5,i]^0.52, M = outputs_3[5,i])#
+}#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_prevalence.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 0.6))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 111,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 19, y = 111, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 107,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 19, y = 107, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 103,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 19, y = 103, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "seasonal_mpb.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, outputs_1[5,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 105))  #
+lines(temperature, outputs_2[5,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, outputs_3[5,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#
+#legend(x = 10, y = 111,  legend =  "No seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 19, y = 111, legend =  round(temperature[which.max(outputs_1[5,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 10, y = 107,  legend =  "Mild. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 19, y = 107, legend =  round(temperature[which.max(outputs_2[5,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 10, y = 103,  legend =  "Sev. seas. Opt. Temp. =", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 19, y = 103, legend =  round(temperature[which.max(outputs_3[5,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+mtext(text = expression(paste(italic(S.), " ", italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+#
+dev.off()
+ls()
+# run the parameter script#
+source("par_set_mansoni.R")
+epsilon = .1
+temperature = 25
+seasonal_temperature <-data.frame(temp = temperature[j] * (1 + epsilon * sin(2 * pi * sample_parameters/365)))
+j =1
+seasonal_temperature <-data.frame(temp = temperature[j] * (1 + epsilon * sin(2 * pi * sample_parameters/365)))
+year = 2
+sample_parameters <- seq(from = 0, to = 365*year+1, by = 0.1)
+seasonal_temperature <-data.frame(temp = temperature[j] * (1 + epsilon * sin(2 * pi * sample_parameters/365)))
+plot(sample_parameters, ifelse(fn_nu_s(seasonal_temperature)$.fitted >= 0, #
+                                                             fn_nu_s(seasonal_temperature)$.fitted,0))
+load("/Users/ibrahimaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/aestivation_model/2024_april_23rd_ver_R/no_eastivation/s.mansoni/model_run_with_different_seasonality/april_30.RData")
+load("/Users/ibrahimaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/aestivation_model/2024_july_20th_ver_R/no_aestivation/s.mansoni/model_run_with_different_seasonality/july_23.RData")
+load("/Users/ibrahimhalilaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/aestivation_model/2024_august_1st_ver_R/no_aestivation/s.mansoni/model_run_with_different_seasonality/august_2.RData")
+load("/Users/ibrahimhalilaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/aestivation_model/2024_august_1st_ver_R/no_aestivation/s.mansoni/model_run_with_different_seasonality/august_2.RData")

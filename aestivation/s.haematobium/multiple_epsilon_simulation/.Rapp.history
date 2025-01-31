@@ -1,0 +1,117 @@
+load("/Users/ibrahimaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/aestivation_model/2024_july_20th_ver_R/aestivation/s.haematobium/mpb_with_multiple_epsilon/july_23.RData")
+load("/Users/ibrahimhalilaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/aestivation_model/2024_august_1st_ver_R/aestivation/s.haematobium/mpb_with_multiple_epsilon/august_1.RData")
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "mpb_with_estivation.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, out_come_season_mpb[1,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, max(out_come_season_mpb[1,])+20))  #
+lines(temperature, out_come_season_mpb[2,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, out_come_season_mpb[3,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#lines(temperature, out_come_season[4,], col = 4, pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#legend(x = 12, y = 103,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 16.5, y = 103, legend =  round(temperature[which.max(out_come_season[1,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 12, y = 98,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 16.5, y = 98, legend =  round(temperature[which.max(out_come_season[2,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 12, y = 93,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 16.5, y = 93, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#legend(x = 13.2, y = 128,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 4)#
+#legend(x = 17.5, y = 128, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 4)#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+#mtext(text = expression(italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+dev.off()#
+# When using estimated clumper parameter for S. heamatobium #
+wormPrevalenceSh <- function(M) {#
+  k <- exp(0.5186358*log(M) - 3.253653)#
+  p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites #
+  return(p)#
+}#
+#convert mean parasite burden to prevalence #
+out_come_season[1, ] <- wormPrevalenceSh(out_come_season[1,])#
+out_come_season[2, ] <- wormPrevalenceSh(out_come_season[2,])#
+out_come_season[3, ] <- wormPrevalenceSh(out_come_season[3,])#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "prevalence_with_estivation.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, out_come_season[1,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 1))  #
+lines(temperature, out_come_season[2,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, out_come_season[3,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#lines(temperature, out_come_season[4,], col = 4, pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+text(x = temperature[which.max(out_come_season[1,])]+1.5, y = max(out_come_season[1,])+0.02, labels = '(23.1, 0.89)', col = "blue", cex = .9) #
+#text(x = temperature[which.max(outputs_1)], y = 0.02, labels = temperature[which.max(outputs_1)], col = "blue", cex = 1)#
+text(x = temperature[which.max(out_come_season[2,])]+1.7, y = max(out_come_season[2,])+0.015, labels = '(22.8, 0.85)', col = "orange", cex = .9) #
+#text(x = temperature[which.max(outputs_2)], y = 0.02, labels = temperature[which.max(outputs_2)], col = "orange", cex = 1)#
+text(x = temperature[which.max(out_come_season[3,])]+2, y = max(out_come_season[3,])+0.02, labels = '(20.9, 0.63)', col = "red", cex = .9) #
+#text(x = temperature[which.max(outputs_3)], y = 0.02, labels = temperature[which.max(outputs_3)], col = "red", cex = 1)#
+# Adding arrow passing over three points for outputs_1#
+points_to_connect <- c(which.max(out_come_season[1,]), which.max(out_come_season[2,]), which.max(out_come_season[3,]))#
+arrows(x0 = temperature[points_to_connect[1]], y0 = out_come_season[1,points_to_connect[1]], #
+       x1 = temperature[points_to_connect[2]], y1 = out_come_season[2,points_to_connect[2]], #
+       col = "black", length = 0.1, typ = "l", lwd = 3)#
+arrows(x0 = temperature[points_to_connect[2]], y0 = out_come_season[2,points_to_connect[2]], #
+       x1 = temperature[points_to_connect[3]], y1 = out_come_season[3,points_to_connect[3]], #
+       col = "black", length = 0.1, type = "l", lwd = 3)#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+#mtext(text = expression(italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+dev.off()
+out_come_season <- out_come_season_mpb
+out_come_season <- out_come_season_mpb#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "mpb_with_estivation.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, out_come_season_mpb[1,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, max(out_come_season_mpb[1,])+20))  #
+lines(temperature, out_come_season_mpb[2,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, out_come_season_mpb[3,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#lines(temperature, out_come_season[4,], col = 4, pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#legend(x = 12, y = 103,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 1)#
+#legend(x = 16.5, y = 103, legend =  round(temperature[which.max(out_come_season[1,])],4), cex = 1.5, bty = "n", text.col = 1)#
+#legend(x = 12, y = 98,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 2)#
+#legend(x = 16.5, y = 98, legend =  round(temperature[which.max(out_come_season[2,])],4), cex = 1.5, bty = "n", text.col = 2)#
+#legend(x = 12, y = 93,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 3)#
+#legend(x = 16.5, y = 93, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 3)#
+#legend(x = 13.2, y = 128,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 4)#
+#legend(x = 17.5, y = 128, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 4)#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)#
+#mtext(text = expression(italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+dev.off()#
+# When using estimated clumper parameter for S. heamatobium #
+wormPrevalenceSh <- function(M) {#
+  k <- exp(0.5186358*log(M) - 3.253653)#
+  p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites #
+  return(p)#
+}#
+#convert mean parasite burden to prevalence #
+out_come_season[1, ] <- wormPrevalenceSh(out_come_season[1,])#
+out_come_season[2, ] <- wormPrevalenceSh(out_come_season[2,])#
+out_come_season[3, ] <- wormPrevalenceSh(out_come_season[3,])#
+# Plot mean parasite burden for three different seasonality#
+pdf(file = "prevalence_with_estivation.pdf", width = 8, height = 8)#
+par(mar=c(6, 6, 6, 1), xpd = TRUE)#
+plot(temperature, out_come_season[1,], col = "blue",  pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2,#
+     main = "", ylim = c(0, 1))  #
+lines(temperature, out_come_season[2,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+lines(temperature, out_come_season[3,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+#lines(temperature, out_come_season[4,], col = 4, pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)#
+text(x = temperature[which.max(out_come_season[1,])]+1.5, y = max(out_come_season[1,])+0.02, labels = '(23.1, 0.89)', col = "blue", cex = .9) #
+#text(x = temperature[which.max(outputs_1)], y = 0.02, labels = temperature[which.max(outputs_1)], col = "blue", cex = 1)#
+text(x = temperature[which.max(out_come_season[2,])]+1.7, y = max(out_come_season[2,])+0.015, labels = '(22.8, 0.85)', col = "orange", cex = .9) #
+#text(x = temperature[which.max(outputs_2)], y = 0.02, labels = temperature[which.max(outputs_2)], col = "orange", cex = 1)#
+text(x = temperature[which.max(out_come_season[3,])]+2, y = max(out_come_season[3,])+0.02, labels = '(20.9, 0.63)', col = "red", cex = .9) #
+#text(x = temperature[which.max(outputs_3)], y = 0.02, labels = temperature[which.max(outputs_3)], col = "red", cex = 1)#
+# Adding arrow passing over three points for outputs_1#
+points_to_connect <- c(which.max(out_come_season[1,]), which.max(out_come_season[2,]), which.max(out_come_season[3,]))#
+arrows(x0 = temperature[points_to_connect[1]], y0 = out_come_season[1,points_to_connect[1]], #
+       x1 = temperature[points_to_connect[2]], y1 = out_come_season[2,points_to_connect[2]], #
+       col = "black", length = 0.1, typ = "l", lwd = 3)#
+arrows(x0 = temperature[points_to_connect[2]], y0 = out_come_season[2,points_to_connect[2]], #
+       x1 = temperature[points_to_connect[3]], y1 = out_come_season[3,points_to_connect[3]], #
+       col = "black", length = 0.1, type = "l", lwd = 3)#
+mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)#
+#mtext(text = "Prevalence", side = 2, line = 4, cex = 2)#
+#mtext(text = expression(italic(S.haematobium)), side = 3, line = 4, cex = 2)#
+dev.off()
+load("/Users/ibrahimhalilaslan/Library/CloudStorage/GoogleDrive-iaslan@stanford.edu/.shortcut-targets-by-id/1e2xUwinp8NuntTAkfNCUIW_48Onf6MCd/Belmont Project/Thermal_sensitive_models/r_ibrahim_scripts/aestivation_model/2024_august_1st_ver_R/aestivation/s.haematobium/mpb_with_multiple_epsilon/august_1.RData")
