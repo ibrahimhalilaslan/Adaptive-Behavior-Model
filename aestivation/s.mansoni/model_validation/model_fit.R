@@ -11,6 +11,8 @@ df_h <- read.csv('s_haematobium_simulation_data.csv')
 df_m <- df_m[complete.cases(df_m),]
 df_h <- df_h[complete.cases(df_h),]
 
+
+
 #### Calculate RMSE for each simulation
 
 # S. Mansoni
@@ -56,10 +58,36 @@ t.test((df_m$Non_Constant_Temp_Non_Aestivation - df_m$Prevalence)^2,
        (df_m$Constant_Temp_Non_Aestivation - df_m$Prevalence)^2,
        paired = TRUE)
 
+#Maurice suggestion 
+ll_const <- as.numeric(logLik(lm(df_m$Prevalence ~ offset(df_m$Constant_Temp_Non_Aestivation))))
+ll_seas <- as.numeric(logLik(lm(df_m$Prevalence ~ offset(df_m$Non_Constant_Temp_Non_Aestivation))))
+chisq <- -2 * (ll_const - ll_seas)
+pchisq(chisq, df = 1, lower.tail = FALSE)
+
+ll_const <- as.numeric(logLik(lm(Prevalence ~ Constant_Temp_Non_Aestivation, data = df_m)))
+ll_seas <- as.numeric(logLik(lm(Prevalence ~ Non_Constant_Temp_Non_Aestivation, data = df_m)))
+chisq <- -2 * (ll_const - ll_seas)
+pchisq(chisq, df = 1, lower.tail = FALSE)
+
+
 # S. Haematobium
 t.test((df_h$Non_Constant_Temp_Non_Aestivation - df_h$Prevalence)^2, 
        (df_h$Constant_Temp_Non_Aestivation - df_h$Prevalence)^2,
        paired = TRUE)
+#Maurice suggestion 
+
+ll_const <- as.numeric(logLik(lm(df_h$Prevalence ~ offset(df_h$Constant_Temp_Non_Aestivation))))
+ll_seas <- as.numeric(logLik(lm(df_h$Prevalence ~ offset(df_h$Non_Constant_Temp_Non_Aestivation))))
+chisq <- -2 * (ll_const - ll_seas)
+pchisq(chisq, df = 1, lower.tail = FALSE)
+
+
+
+ll_const <- as.numeric(logLik(lm(Prevalence ~ Constant_Temp_Non_Aestivation, data = df_h)))
+ll_seas <- as.numeric(logLik(lm(Prevalence ~ Non_Constant_Temp_Non_Aestivation, data = df_h)))
+chisq <- -2 * (ll_const - ll_seas)
+pchisq(chisq, df = 1, lower.tail = FALSE)
+
 
 #### Are the error rates different with dormancy (for seasonal model)?
 
@@ -68,10 +96,39 @@ t.test((df_m$Non_Constant_Temp_Non_Aestivation - df_m$Prevalence)^2,
        (df_m$Non_Constant_Temp_Aestivation - df_m$Prevalence)^2,
        paired = TRUE)
 
+#Maurice suggestion 
+
+ll_const <- as.numeric(logLik(lm(df_m$Prevalence ~ offset(df_m$Non_Constant_Temp_Non_Aestivation))))
+ll_seas <- as.numeric(logLik(lm(df_m$Prevalence ~ offset(df_m$Non_Constant_Temp_Aestivation))))
+chisq <- -2 * (ll_const - ll_seas)
+pchisq(chisq, df = 3, lower.tail = FALSE)
+
+
+ll_const <- as.numeric(logLik(lm(Prevalence ~ Non_Constant_Temp_Non_Aestivation, data = df_m)))
+ll_seas <- as.numeric(logLik(lm(Prevalence ~ Non_Constant_Temp_Aestivation, data = df_m)))
+chisq <- -2 * (ll_const - ll_seas)
+pchisq(chisq, df = 3, lower.tail = FALSE)
+
+
 # S. Haematobium
 t.test((df_h$Non_Constant_Temp_Non_Aestivation - df_h$Prevalence)^2, 
        (df_h$Non_Constant_Temp_Aestivation - df_h$Prevalence)^2,
        paired = TRUE)
+
+ll_const <- as.numeric(logLik(lm(df_h$Prevalence ~ offset(df_h$Non_Constant_Temp_Non_Aestivation))))
+ll_seas <- as.numeric(logLik(lm(df_h$Prevalence ~ offset(df_h$Non_Constant_Temp_Aestivation))))
+chisq <- -2 * (ll_const - ll_seas)
+pchisq(chisq, df = 3, lower.tail = FALSE)
+
+
+ll_const <- as.numeric(logLik(lm(Prevalence ~ Non_Constant_Temp_Non_Aestivation, data = df_h)))
+ll_seas <- as.numeric(logLik(lm(Prevalence ~ Non_Constant_Temp_Aestivation, data = df_h)))
+chisq <- -2 * (ll_const - ll_seas)
+pchisq(chisq, df = 3, lower.tail = FALSE)
+
+
+
+
 
 #### How many model predictions are false negative? (FN/(FN + TN))
 
