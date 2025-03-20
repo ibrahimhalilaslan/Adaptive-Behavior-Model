@@ -1,4 +1,4 @@
-# This  script is analyzing prevalence and MPB with seasonality 
+# This  script is analyzing prevalence and MPB with seasonality and adaptive behavior
 # Mainly we want to see the effect of seasonality on the prevalence and 
 # mean burden of parasite and the optimal temperature. 
 
@@ -12,23 +12,23 @@ library(doParallel)
 # run the parameter script
 source("par_set_haematobium.R")
 
-
+# We start with setting the parameter sets for the eastivation function
 # set the temperature of half saturation for snails estivation function at high temperatures 
 est_temp <- 23
 
 # set the rate of snails move to the estivation stages
-est_rate <- 0.11
+est_rate <- 0.065
 
-# Set the steepness of estivation function for hot temperature 
-steepness <-  0.6
+# Set the steepness of aestivation function for hot temperature 
+steepness <-  0.7
 
-# Define a piecewise function for vector input
+# Define aestivation function for in aestivation
 in_est_function <- function(x) {
   y <- est_rate/(1+exp(-steepness*(x-est_temp)))
   return(y)
 }
 
-# Define a piecewise function for vector input
+# Define aestivation function for out aestivation
 out_est_function <- function(x) {
   y <- est_rate/(1+exp(steepness*(x-est_temp)))
   return(y)
@@ -37,7 +37,6 @@ out_est_function <- function(x) {
 # The reduction of mortality due to estivation
 re_est <- 20
 re_est_i <- 2
-
 
 
 # if we want to calculate the average number of mated pair of worm we will be using 
@@ -77,7 +76,10 @@ run_time <- seq(from = 0, to = 365*year, by = step_size)
 #set a sample space for temperature 
 sample_parameters <- seq(from = 0, to = 365*year+1, by = 1)
 
+# set the min value of seasonality 
 min_season <- 0
+
+# set the max value of seasonality 
 max_season <- 0.27
 
 #seasonality value
@@ -86,8 +88,7 @@ seasonality <- seq(min_season, max_season, 0.01);
 # Generate an empty matrix to record outcome of the runs  
 out_come_season <- matrix(nrow = length(seasonality), ncol = length(temperature))
 
-
-# combine two piece wise function of mu_i
+# Generate an empty matrix to record all the parameter need in the runs  
 preds_mu_i <- matrix(nrow = length(temperature), ncol = length(sample_parameters))                        
 preds_mu <- matrix(nrow = length(temperature), ncol = length(sample_parameters))                        
 preds_nu_s <- matrix(nrow = length(temperature), ncol = length(sample_parameters))
@@ -102,6 +103,7 @@ preds_in_estivation <- matrix(nrow = length(temperature), ncol = length(sample_p
 preds_out_estivation <- matrix(nrow = length(temperature), ncol = length(sample_parameters))
 
 
+# Start looping the simulaiton for each epsilon and temperature value
 for(epsilon in 1:length(seasonality)){
   
   for(j in 1:length(temperature)){
@@ -109,6 +111,7 @@ for(epsilon in 1:length(seasonality)){
     #set seasonal temperature
     seasonal_temperature <-data.frame(temp = temperature[j] * (1 + seasonality[epsilon] * sin(2 * pi * sample_parameters/365)))
 
+    # Set the parameter for seasonal varying temperature 
     preds_nu_s[j,] <- ifelse(fn_nu_s(seasonal_temperature)$.fitted >= 0, 
                              fn_nu_s(seasonal_temperature)$.fitted,0)
     preds_mu[j,] <- ifelse(seasonal_temperature$temp <= 33, 
@@ -251,7 +254,8 @@ densit_plot + scale_color_gradient(low="white", high="red") + theme(panel.grid.m
 
 dev.off()
 
-
+#Save the environment 
+save.image(file = "my_environment.RData")
 
 
 

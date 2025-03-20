@@ -1,8 +1,4 @@
 # This  script is analyzing prevalence and MPB with seasonality 
-# Mainly we want to see the effect of seasonality on the prevalence and 
-# mean burden of parasite and the optimal temperature. 
-
-############### To create a heat map, we run the model with multiply many mean temperature and three different seasonality 
 
 rm(list = ls())
 
@@ -50,7 +46,10 @@ run_time <- seq(from = 0, to = 365*year, by = step_size)
 #set a sample space for temperature 
 sample_parameters <- seq(from = 0, to = 365*year+1, by = 1)
 
+#set the minimum value of seasonality
 min_season <- 0
+
+#set the maximum value of seasonality
 max_season <- 0.27
 
 #seasonality value
@@ -60,7 +59,7 @@ seasonality <- seq(min_season, max_season, 0.01);
 out_come_season <- matrix(nrow = length(seasonality), ncol = length(temperature))
 
 
-# combine two piece wise function of mu_i
+# Generate an empty matrix to record parameters need in the runs  
 preds_mu_i <- matrix(nrow = length(temperature), ncol = length(sample_parameters))                        
 preds_mu <- matrix(nrow = length(temperature), ncol = length(sample_parameters))                        
 preds_nu_s <- matrix(nrow = length(temperature), ncol = length(sample_parameters))
@@ -73,6 +72,7 @@ preds_beta_s <- matrix(nrow = length(temperature), ncol = length(sample_paramete
 preds_beta_h <- matrix(nrow = length(temperature), ncol = length(sample_parameters))
 
 
+#Start looping the simulation for each temperature and seasonality value 
 for(epsilon in 1:length(seasonality)){
   
   for(j in 1:length(temperature)){
@@ -80,6 +80,7 @@ for(epsilon in 1:length(seasonality)){
     #set seasonal temperature
     seasonal_temperature <-data.frame(temp = temperature[j] * (1 + seasonality[epsilon] * sin(2 * pi * sample_parameters/365)))
 
+    #set the parameters for each seasonal and temperature value
     preds_nu_s[j,] <- ifelse(fn_nu_s(seasonal_temperature)$.fitted >= 0, 
                              fn_nu_s(seasonal_temperature)$.fitted,0)
     preds_mu[j,] <- ifelse(seasonal_temperature$temp <= 33, 
@@ -187,7 +188,6 @@ for(epsilon in 1:length(seasonality)){
   
   out_come_season[epsilon, ] <- out_come_for_each_temperature
 } 
-
 
 
 # Repeat the column n times

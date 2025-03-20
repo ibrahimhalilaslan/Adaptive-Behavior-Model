@@ -2,16 +2,15 @@
 
 
 # Replace entries in out_come_season with 0 if they are greater than 100 or less than 2
-out_come_season[out_come_season < .4] <- 0
+out_come_season[out_come_season < .3] <- 0
 
 
-# When using estimated clumper parameter for S. heamatobium 
+# Define function of the MPB into prevalence 
 wormPrevalenceSh <- function(M) {
   k <- exp(0.5186358*log(M) - 3.253653)
   p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
   return(p)
 }
-
 
 #convert mean parasite burden to prevalence 
 for (i in 1:length(out_come_season[,1])){
@@ -36,7 +35,10 @@ min_eps <- 0.02;
 # Set maximum epsilon 
 max_eps <- 0.25;
 
+#set the temperature steps
 temperature_step <- 0.5
+
+#set the seasonality steps
 epsilon_step <- 0.02
 
 
@@ -48,7 +50,7 @@ epsilons <- seq(min_eps, max_eps, by = epsilon_step)
 prev_percent <- read.csv(file = 'gntd_vars_all.csv')
 
 # Filter S. haematobium data directly
-sch_haematobium <- subset(prev_percent, parasite_s == "S. haematobium" & percent_pos != 0 & !is.na(bio01))
+sch_haematobium <- subset(prev_percent, parasite_s == "S. haematobium" & !is.na(bio01))
 
 # Convert Bioclimate variables into seasonality
 gntd_data <- data.frame(
@@ -62,6 +64,7 @@ gntd_data <- data.frame(
 new_gntd_data <- matrix(NA, nrow = length(epsilons), ncol = length(temperatures))
 
 # Use nested loops for temperature and epsilon bins
+# This loop assign the gntd data set in to each grid cell
 for (i in seq_along(temperatures)) {
   temp_min <- temperatures[i]
   temp_max <- temp_min + temperature_step
@@ -90,28 +93,16 @@ new_gntd_data_fram <- data.frame(
   intensity = as.vector(t(new_gntd_data))                # First column: entries of the matrix
   )
 
+# remove the value when the prevalence is equal to zero
 new_gntd_data_fram <- new_gntd_data_fram[-which(new_gntd_data_fram$intensity == 0),]
 
 
-# upload whole africa bioclimate variables   
-##africa_temperature <- read.csv(file = 'Africa_BIOCLIM.csv')
 
-
-# Convert bioclimate variables into seasonality 
-#df_africa_temperature <- data.frame(
-##  x = africa_temperature$BIO1,
- # y = (africa_temperature$BIO10-africa_temperature$BIO11)*pi/(africa_temperature$BIO1*4*sqrt(2))
-#)
-
-# Remove the temperature values out of our interest 
-#df_africa_temperature_filtered <- df_africa_temperature[!(df_africa_temperature$x > 35 | df_africa_temperature$x <  12), ]
-#df_africa_temperature_filtered <- df_africa_temperature_filtered[!(df_africa_temperature_filtered$y > 0.32 | df_africa_temperature_filtered$y < 0), ]
 
 
 library(ggplot2)
 library(dplyr)
 
-# Your data frame (df) and gntd_data should be defined here
 
 # Create a new variable for coloring
 df <- df %>%

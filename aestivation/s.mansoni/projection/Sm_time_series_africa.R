@@ -1,13 +1,8 @@
-# This  script is analyzing prevalence and MPB with seasonality 
-# Mainly we want to see the effect of seasonality on the prevalence and 
-# mean burden of parasite and the optimal temperature. 
+# This script simulate the prevalence value for given real time temperature time series 
 
-############### we run the model with multiply many mean temperature and three different seasonality 
-
-
+#remove the environment 
 rm(list = ls())
 
-# Model parameters are set in this script 
 
 # run the parameter script
 source("par_set_mansoni.R")
@@ -51,19 +46,19 @@ phiSm <- function(M) {
 est_temp <- 23
 
 # set the rate of snails move to the estivation stages
-est_rate <- 0.11
+est_rate <- 0.085
 
 # Set the steepness of estivation function for hot temperature 
-steepness <- 1.1
+steepness <- 0.9
 
 
-# Define a piecewise function for vector input
+# Define aestivation function for in aestivation
 in_est_function <- function(x) {
   y <- est_rate/(1+exp(-steepness*(x-est_temp)))
   return(y)
 }
 
-# Define a piecewise function for vector input
+# Define aestivation function for out aestivation
 out_est_function <- function(x) {
   y <- est_rate/(1+exp(steepness*(x-est_temp)))
   return(y)
@@ -77,7 +72,7 @@ re_est_i <- 2
 
 #################################################
 
-
+#Determine the row and column for the parameters to be calculated 
 n <- nrow(temperature)
 m <- ncol(temperature)-3
 mean_annual_temp <- c()
@@ -234,8 +229,9 @@ for(j in 1:n){
   #Stop cluster
   stopCluster(cluster)
   
-  out_come_for_each_temperature[out_come_for_each_temperature < 0.8] <- 0
+  out_come_for_each_temperature[out_come_for_each_temperature < 0.74] <- 0
   
+  #convert MPB into prevalence
   wormPrevalenceSm <- function(M) {
     k <- exp(0.61521*log(M) - 4.844146)
     p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
@@ -246,13 +242,13 @@ for(j in 1:n){
   df_results <- data.frame(Longitude = temperature[, 3],
                      Latitude = temperature[, 2], MAT = mean_annual_temp, MPB = out_come_for_each_temperature, Prevalence = wormPrevalenceSm(out_come_for_each_temperature))
 
-  # Save as CSV with specified column nam/es
+  # Save as CSV with specified column names
   write.csv(df_results,"Sm_time_series_14630.csv", row.names = FALSE)
   
 
   
   
-  
+  # read all the saved csv files 
   df_1 <- read.csv(file = 'Sm_time_series_1000.csv')
   df_2 <- read.csv(file = 'Sm_time_series_2000.csv')
   df_3 <- read.csv(file = 'Sm_time_series_3000.csv')
@@ -269,6 +265,7 @@ for(j in 1:n){
   df_14 <- read.csv(file = 'Sm_time_series_14000.csv')
   df_15 <- read.csv(file = 'Sm_time_series_14630.csv')
   
+  #combine all prevalence value 
   combine_df <- bind_rows(df_1, df_2, df_3, df_4, df_5, df_6, df_7, 
                        df_8, df_9, df_10, df_11, df_12, df_13, df_14, df_15)
 

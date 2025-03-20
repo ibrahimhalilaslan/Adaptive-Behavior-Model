@@ -17,25 +17,27 @@ library(doParallel)
 # run the parameter script
 source("par_set_haematobium.R")
 
-# We improve the previous model with estivation function which is as follow
+# We improve the previous model with aestivation function which is as follow
 
+# We start with setting the parameters used in the aestivation function
 # set the temperature of half saturation for snails estivation function at high temperatures 
-est_temp <- 23
+est_temp <- 23  
 
 # set the rate of snails move to the estivation stages
-est_rate <- 0.11
+est_rate <- 0.065
 
 # Set the steepness of estivation function for hot temperature 
-steepness <-  0.6
+steepness <-  0.7
 
 
-# Define a piecewise function for vector input
+
+# Define aestivation function for in aestivation
 in_est_function <- function(x) {
   y <- est_rate/(1+exp(-steepness*(x-est_temp)))
   return(y)
 }
 
-# Define a piecewise function for vector input
+# Define aestivation function for out aestivation
 out_est_function <- function(x) {
   y <- est_rate/(1+exp(steepness*(x-est_temp)))
   return(y)
@@ -84,7 +86,7 @@ run_time <- seq(from = 0, to = 365*year, by = step_size)
 #set a sample space for temperature 
 sample_parameters <- seq(from = 0, to = 365*year+1, by = 1)
 
-#seasonality value
+#seasonality three value
 sesonality <- c(0, 0.1, 0.25)
 
 # create an empty matrix to record the outcome of simulations 
@@ -247,26 +249,14 @@ plot(temperature, out_come_season[1,], col = "blue",  pch = 21, lwd = 3, las = 1
      main = "", ylim = c(0, max(out_come_season[1,])+10))  
 lines(temperature, out_come_season[2,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
 lines(temperature, out_come_season[3,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
-#lines(temperature, out_come_season[4,], col = 4, pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
-
-#legend(x = 12, y = 103,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 1)
-#legend(x = 16.5, y = 103, legend =  round(temperature[which.max(out_come_season[1,])],4), cex = 1.5, bty = "n", text.col = 1)
-#legend(x = 12, y = 98,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 2)
-#legend(x = 16.5, y = 98, legend =  round(temperature[which.max(out_come_season[2,])],4), cex = 1.5, bty = "n", text.col = 2)
-#legend(x = 12, y = 93,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 3)
-#legend(x = 16.5, y = 93, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 3)
-#legend(x = 13.2, y = 128,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 4)
-#legend(x = 17.5, y = 128, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 4)
-
 
 mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)
-#mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)
 mtext(text = expression(paste(italic(S.), " ", italic(haematobium))* " with adaptive behaviors"), side = 3, line = 4, cex = 2)
 
 dev.off()
 
 
-# When using estimated clumper parameter for S. heamatobium 
+#Define function to convert the MPB into prevalence 
 wormPrevalenceSh <- function(M) {
   k <- exp(0.5186358*log(M) - 3.253653)
   p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
@@ -310,7 +300,6 @@ arrows(x0 = temperature[points_to_connect[2]], y0 = out_come_season[2,points_to_
        col = "black", length = 0.1, lty = 1, lwd = 3)
 
 mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)
-#mtext(text = "Prevalence", side = 2, line = 4, cex = 2)
 mtext(text = expression(paste(italic(S.), " ", italic(haematobium))* " with adaptive behaviors"), side = 3, line = 4, cex = 2)
 
 dev.off()

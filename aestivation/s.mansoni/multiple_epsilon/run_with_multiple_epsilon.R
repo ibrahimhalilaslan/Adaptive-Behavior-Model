@@ -20,35 +20,33 @@ source("par_set_mansoni.R")
 # We improve the previous model with estivation function which is as follow
 
 
+# We start with setting the parameters used in the aestivation function
 # set the temperature of half saturation for snails estivation function at high temperatures 
-est_temp <- 23
+est_temp <- 23  
 
-# set the rate of snails move to the estivation stages
-est_rate <- 0.11
+# set the rate of snails move to the aestivation stages
+est_rate <- 0.085
 
-# Set the steepness of estivation function for hot temperature 
-steepness <- 1.1
+# Set the steepness of aestivation function for hot temperature 
+steepness <- 0.9
 
 
-# Define a piecewise function for vector input
+# Define aestivation function for in aestivation
 in_est_function <- function(x) {
   y <- est_rate/(1+exp(-steepness*(x-est_temp)))
   return(y)
 }
 
-# Define a piecewise function for vector input
+# Define aestivation function for out aestivation
 out_est_function <- function(x) {
   y <- est_rate/(1+exp(steepness*(x-est_temp)))
   return(y)
 }
 
-#plot(12:35, in_est_function(12:35))
 
 # The reduction of mortality due to estivation
 re_est <- 20
 re_est_i <- 2
-
-
 
 # This function calculate the average number of mated pair of worm given MPB 
 phiSm <- function(M) {
@@ -89,7 +87,7 @@ run_time <- seq(from = 0, to = 365*year, by = step_size)
 #set a sample space for temperature 
 sample_parameters <- seq(from = 0, to = 365*year+1, by = 1)
 
-#seasonality value
+#seasonality three value
 sesonality <- c(0, .1, .25)
 
 # create an empty matrix to record the outcome of simulations 
@@ -245,7 +243,6 @@ for(epsilon in 1:length(sesonality)){
 
 
 
-
 # Plot mean parasite burden for three different seasonality
 pdf(file = "mpb_with_estivation.pdf", width = 8, height = 8)
 par(mar=c(6, 6, 6, 1), xpd = TRUE)
@@ -253,16 +250,6 @@ plot(temperature, out_come_season[1,], col = "blue",  pch = 21, lwd = 3, las = 1
      main = "", ylim = c(0, max(out_come_season[1,])+20))  
 lines(temperature, out_come_season[2,], col = "orange", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
 lines(temperature, out_come_season[3,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
-#lines(temperature, out_come_season[4,], col = 4, pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
-
-#legend(x = 12, y = 113,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 1)
-#legend(x = 16.5, y = 113, legend =  round(temperature[which.max(out_come_season[1,])],4), cex = 1.5, bty = "n", text.col = 1)
-#legend(x = 12, y = 108,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 2)
-#legend(x = 16.5, y = 108, legend =  round(temperature[which.max(out_come_season[2,])],4), cex = 1.5, bty = "n", text.col = 2)
-#legend(x = 12, y = 103,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 3)
-#legend(x = 16.5, y = 103, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 3)
-#legend(x = 13.2, y = 128,  legend =  "Opt. Temp. = ", bty = "n", cex = 1.5, text.col = 4)
-#legend(x = 17.5, y = 128, legend =  round(temperature[which.max(out_come_season[3,])],4), cex = 1.5, bty = "n", text.col = 4)
 
 mtext(text = expression(paste("Mean annual temperature (",degree,"C)")), side = 1, line = 4, cex = 2)
 mtext(text = "Mean parasite burden", side = 2, line = 4, cex = 2)
@@ -271,7 +258,7 @@ mtext(text = expression(paste(italic(S.), " ", italic(mansoni))* " with adaptive
 dev.off()
 
 
-
+#Define function to convert the MPB into prevalence 
 wormPrevalenceSm <- function(M) {
   k <- exp(0.61521*log(M) - 4.844146)
   p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
@@ -292,7 +279,6 @@ plot(temperature, out_come_season[1,], col = "black",  pch = 21, lwd = 3, las = 
      main = "", ylim = c(0, 1))  
 lines(temperature, out_come_season[2,], col = "blue", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
 lines(temperature, out_come_season[3,], col = "red", pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
-#lines(temperature, out_come_season[4,], col = 4, pch = 21, lwd = 3, las = 1, ylab = "",  xlab = "", cex.lab = 2, type = "l", cex.axis=2)
 
 text(x = 29, y = 0.9, labels = '(23.1, 0.69)', col = "black", cex = 1.5) 
 arrows(x0 = temperature[which.max(out_come_season[1,])], y0 = max(out_come_season[1,]), 

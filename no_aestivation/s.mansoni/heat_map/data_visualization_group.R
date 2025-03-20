@@ -2,8 +2,9 @@
 
 
 # Replace entries in out_come_season with 0 if they are greater than 100 or less than 2
-out_come_season[out_come_season < 0.8] <- 0
+out_come_season[out_come_season < 0.74] <- 0
 
+# Define the functiont to convert the MPB into the prevalence
 wormPrevalenceSm <- function(M) {
   k <- exp(0.61521*log(M) - 4.844146)
   p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
@@ -33,7 +34,10 @@ min_eps <- 0.02;
 # Set maximum epsilon 
 max_eps <- 0.25;
 
+# Set temperature steps 
 temperature_step <- 0.5
+
+# Set seasonality steps 
 epsilon_step <- 0.02
 
 
@@ -59,6 +63,7 @@ gntd_data <- data.frame(
 new_gntd_data <- matrix(NA, nrow = length(epsilons), ncol = length(temperatures))
 
 # Use nested loops for temperature and epsilon bins
+# we assign each gntd data into grid cell
 for (i in seq_along(temperatures)) {
   temp_min <- temperatures[i]
   temp_max <- temp_min + temperature_step
@@ -90,19 +95,9 @@ new_gntd_data_fram <- data.frame(
 new_gntd_data_fram <- new_gntd_data_fram[-which(new_gntd_data_fram$intensity == 0),]
 
 
-# upload whole africa bioclimate variables   
-##africa_temperature <- read.csv(file = 'Africa_BIOCLIM.csv')
 
 
-# Convert bioclimate variables into seasonality 
-#df_africa_temperature <- data.frame(
-##  x = africa_temperature$BIO1,
-# y = (africa_temperature$BIO10-africa_temperature$BIO11)*pi/(africa_temperature$BIO1*4*sqrt(2))
-#)
 
-# Remove the temperature values out of our interest 
-#df_africa_temperature_filtered <- df_africa_temperature[!(df_africa_temperature$x > 35 | df_africa_temperature$x <  12), ]
-#df_africa_temperature_filtered <- df_africa_temperature_filtered[!(df_africa_temperature_filtered$y > 0.32 | df_africa_temperature_filtered$y < 0), ]
 
 
 library(ggplot2)
