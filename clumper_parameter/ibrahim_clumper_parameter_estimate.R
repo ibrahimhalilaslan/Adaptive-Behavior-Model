@@ -1,0 +1,283 @@
+# This code calculate the opt value of clumper parameters 
+# whcih we need to covert the mean parasite burden into prevalence 
+### Human Parasitology Data ###
+
+#upload the packages
+library(tidyverse)
+library(dplyr)
+
+# upload the data file:
+human_data <- read_csv("human_data_2018.csv")
+
+PreTreatedKidsID2017_MK_MN <- read_csv("2017_ID_pretreatedKids_MK_NM.csv")
+human_data = left_join(human_data, PreTreatedKidsID2017_MK_MN, by=c("ID","year"))
+
+##### group by village/school #####
+prev_data <- human_data %>%       ### arithemtic mean
+  group_by(School, year) %>% 
+  summarise_at(.vars = c("Sh","Sm"), funs(mean(., na.rm=T), n = sum(!is.na(.)), se = sd(., na.rm=T)/sqrt(sum(!is.na(.))))) %>% 
+  mutate(Sh_CI = qnorm(0.975)*Sh_se,
+         Sm_CI = qnorm(0.975)*Sm_se)
+
+# Draw only worm data 
+worm_data <- human_data %>%       ### geometric mean
+  group_by(School, year) %>%
+  summarize_at(.vars = c("ShW","SmW"), funs(Gmean = exp(mean(log(.+1),na.rm=T)),
+                                            n = sum(!is.na(.)),
+                                            se = sd(exp(log(.+1)), na.rm = T)/sqrt(sum(!is.na(.))))) %>% 
+  mutate(ShW_CI = qnorm(0.975)*ShW_se,
+         SmW_CI = qnorm(0.975)*SmW_se)
+
+#################################################################################
+# BEGINNING of Giulio's latest integration on Feb 20 2023
+
+# compute clumping parameters
+
+#create a data frame to store the results
+cp_df <- worm_data[, c("School", "year")]
+cp_df$Sh_Amean <- NA
+cp_df$Sm_Amean <- NA
+cp_df$Sh_cp    <- NA
+cp_df$Sm_cp    <- NA
+
+#create the likelihood function for the optimization function
+LL <- function(pars, data) {
+  k <- pars[1]
+  m <- pars[2]
+  return(-sum(dnbinom(data,size=k,mu=m,log=TRUE)))
+}
+
+# create empty space 
+sh_Amean_data <- c()
+sm_Amean_data <- c()
+
+# run the optimization function to find the opt k clumper parameter value for each given village 
+ for(i in 1:nrow(cp_df)){
+    ndf <- filter(human_data, School == cp_df[i,]$School, year ==  cp_df[i,]$year)
+
+    opt_sh <-optim(data = round(na.exclude(ndf$ShW)/2), par = c(1,1), LL, method="L-BFGS-B", lower=c(.000001,.000001))
+    opt_sm <-optim(data = round(na.exclude(ndf$SmW)), par = c(1,1), LL, method="L-BFGS-B", lower=c(.000001,.000001))
+    
+    sh_Amean_data[i] <- mean(ndf$ShW/2, na.rm = TRUE)
+    sm_Amean_data[i] <- mean(ndf$SmW, na.rm = TRUE)
+    
+    cp_df[i, 'Sh_Amean'] <- opt_sh$par[2]
+    cp_df[i, 'Sm_Amean'] <- opt_sm$par[2]
+    cp_df[i, 'Sh_cp'] <- opt_sh$par[1]  
+    cp_df[i, 'Sm_cp'] <- opt_sm$par[1] 
+  
+ }
+
+
+################### Test the result
+
+# Probability of having at least one worm
+WormPrevNBD <- function(M, k) {
+  p  <-  1 - (1+M/k)^(-k)    # fraction of humans with at least 2 parasites 
+  return(p)
+}
+
+# Probability of having at least one pair worm
+PairPrevVar <- function(M, k) {
+  p  <-  1 - 2* (1+M/(2*k))^(-k) + (1+M/k)^(-k)    # fraction of humans with at least 2 parasites 
+  return(p)
+}
+
+options(scipen = 9)
+
+# calculate the prevalence for the observe data 
+ObsPrevSh <- c()
+ObsPrevSm <- c()
+
+for(i in 1:nrow(cp_df)){
+  ndf <- filter(human_data, School == cp_df[i,]$School, year ==  cp_df[i,]$year)
+  ObsPrevSh[i] <- (length(na.exclude(ndf$ShW)) - length(which(na.exclude(ndf$ShW) == 0)))/length(na.exclude(ndf$ShW))
+  ObsPrevSm[i] <- (length(na.exclude(ndf$SmW)) - length(which(na.exclude(ndf$SmW) == 0)))/length(na.exclude(ndf$SmW))
+}
+
+#compare the prevalence value according to negative bionomial function
+# and observe prevalence value 
+ObsPrevSh/PairPrevVar(cp_df$Sh_Amean,cp_df$Sh_cp)
+plot(1:length(ObsPrevSh), ObsPrevSh, type = "l", col = 2)
+lines(1:length(ObsPrevSh), PairPrevVar(cp_df$Sh_Amean,cp_df$Sh_cp), col = 3)
+
+ObsPrevSm/PairPrevVar(cp_df$Sm_Amean, cp_df$Sm_cp)
+plot(1:length(ObsPrevSm), ObsPrevSm, type = "l", col = 2)
+lines(1:length(ObsPrevSm), PairPrevVar(cp_df$Sm_Amean,cp_df$Sm_cp), col = 3)
+
+
+# compare the prevalence based on the modeling having at least one worm
+ObsPrevSh/WormPrevNBD(cp_df$Sh_Amean,cp_df$Sh_cp)
+plot(1:length(ObsPrevSh), ObsPrevSh, type = "l", col = 2)
+lines(1:length(ObsPrevSh), WormPrevNBD(cp_df$Sh_Amean,cp_df$Sh_cp), col = 3)
+
+
+ObsPrevSm/WormPrevNBD(cp_df$Sm_Amean, cp_df$Sm_cp)
+plot(1:length(ObsPrevSm), ObsPrevSm, type = "l", col = 2)
+lines(1:length(ObsPrevSm), WormPrevNBD(cp_df$Sm_Amean, cp_df$Sm_cp), col = 3)
+
+
+
+# since probability of having at least one worm give 
+#better estimation we will be using WormPrevNBD
+
+################### Now let us look if there is any correlation between MPB and k 
+
+regSh <- lm(Sh_cp ~ Sh_Amean, data = cp_df)
+summary(regSh)
+
+regSm <- lm(Sm_cp ~ Sm_Amean, data = cp_df)
+summary(regSm)
+
+# log-log regression
+
+log_regSh <- lm(log(Sh_cp) ~ log(Sh_Amean), data = cp_df) #filter(cp_df, year == 2018))
+summary(log_regSh)
+
+log_regSm <- lm(log(Sm_cp) ~ log(Sm_Amean), data = cp_df)
+summary(log_regSm)
+
+#### It seems log transfor give better estimate 
+
+ggplot(data = cp_df,aes(x = Sh_cp, y = Sh_Amean, color = year, group = 1)) +
+  geom_point() +
+  geom_smooth(method='lm') +
+  xlab("clumping parameter k") + ylab("MPB") +
+  ggtitle("S. haematobium")
+
+ggplot(data = cp_df,aes(x = Sm_cp, y = Sm_Amean, color = year, group = 1)) +
+  geom_point() +
+  geom_smooth(method='lm') +
+  xlab("clumping parameter k") + ylab("MPB") +
+  ggtitle("S. mansoni")
+
+
+ggplot(data = cp_df,aes(x = log(Sh_cp), y = log(Sh_Amean), color = year, group = 1)) +
+  geom_point() +
+  geom_smooth(method='lm') +
+  xlab("log(Clumping parameter k)") + ylab("log(MPB)") +
+  ggtitle("S. haematobium")
+
+ggplot(data = cp_df,aes(x = log(Sm_cp), y = log(Sm_Amean), color = year, group = 1)) +
+  geom_point() +
+  geom_smooth(method='lm') +
+  xlab("log(Clumping parameter k)") + ylab("log(MPB)") +
+  ggtitle("S. mansoni")
+
+################################
+# When using estimated clumper parameter
+
+wormPrevalenceSm <- function(M) {
+  k <- exp(summary(log_regSm)$coefficients[2]*log(M) + summary(log_regSm)$coefficients[1])
+  p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
+  return(p)
+}
+
+# if we want to calculate the average number of mated pair of worm we will be using 
+phiSm <- function(M) {
+  # Define the function to be integrated
+  k <- exp(summary(log_regSm)$coefficients[2]*log(M) + summary(log_regSm)$coefficients[1])
+  
+  integrand <- function(x) {
+    (1 - cos(x)) / ((1 + (M / (M + k)) * cos(x))^(1 + k))
+  }
+  
+  # Perform the integration
+  integral_result <- integrate(integrand, lower = 0, upper = 2 * pi)
+  
+  # Calculate the prevalence
+  p <- 1 - (((k / (M + k))^(1 + k))/ (2 * pi)) * integral_result$value
+  
+  return(p)
+}
+
+wormPrevalenceSh <- function(M) {
+  k <- exp(summary(log_regSh)$coefficients[2]*log(M) + summary(log_regSh)$coefficients[1])
+  p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
+  return(p)
+}
+
+# if we want to calculate the average number of mated pair of worm we will be using 
+phiSh <- function(M) {
+  # Define the function to be integrated
+  k <- exp(summary(log_regSh)$coefficients[2]*log(M) + summary(log_regSh)$coefficients[1])
+  
+  integrand <- function(x) {
+    (1 - cos(x)) / ((1 + (M / (M + k)) * cos(x))^(1 + k))
+  }
+  
+  # Perform the integration
+  integral_result <- integrate(integrand, lower = 0, upper = 2 * pi)
+  
+  # Calculate the prevalence
+  p <- 1 - (((k / (M + k))^(1 + k))/ (2 * pi)) * integral_result$value
+  
+  return(p)
+}
+
+M = 60
+phiSm(M)*M 
+phiSh(M)*M 
+
+
+
+
+# For S. mansoni
+wormPrevalenceSm <- function(M) {
+  k <- exp(0.61521*log(M) - 4.844146)
+  p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
+  return(p)
+}
+
+
+# For S. mansoni
+# if we want to calculate the average number of mated pair of worm we will be using 
+phiSm <- function(M) {
+  # Define the function to be integrated
+  k <- exp(0.61521*log(M) - 4.844146)
+  
+  integrand <- function(x) {
+    (1 - cos(x)) / ((1 + (M / (M + k)) * cos(x))^(1 + k))
+  }
+  
+  # Perform the integration
+  integral_result <- integrate(integrand, lower = 0, upper = 2 * pi)
+  
+  # Calculate the prevalence
+  p <- 1 - (((k / (M + k))^(1 + k))/ (2 * pi)) * integral_result$value
+  
+  return(p)
+}
+
+
+# When using estimated clumper parameter for S. heamatobium 
+wormPrevalenceSh <- function(M) {
+  k <- exp(0.5186358*log(M) - 3.253653)
+  p  <- 1 - (1+M/k)^(-k)    # fraction of humans with at least 1 parasites 
+  return(p)
+}
+
+
+
+# if we want to calculate the average number of mated pair of worm we will be using 
+phiSh <- function(M) {
+  # Define the function to be integrated
+  k <- exp(0.5186358*log(M) - 3.253653)
+  
+  integrand <- function(x) {
+    (1 - cos(x)) / ((1 + (M / (M + k)) * cos(x))^(1 + k))
+  }
+  
+  # Perform the integration
+  integral_result <- integrate(integrand, lower = 0, upper = 2 * pi)
+  
+  # Calculate the prevalence
+  p <- 1 - (((k / (M + k))^(1 + k))/ (2 * pi)) * integral_result$value
+  
+  return(p)
+}
+
+
+
+
+
