@@ -1,8 +1,8 @@
-This repository contains all the R code necessary to simulate the dynamics of schistosomiasis using a model that incorporates seasonality, with and without aestivation. The simulations are designed to evaluate the impact of seasonality and adaptive behavior on schistosomiasis and also predict the prevalence of S. haematobium and S. mansoni across Africa.
+This repository contains all the R code necessary to simulate the dynamics of schistosomiasis using a model that incorporates seasonality, with and without aestivation, and also calculation of clumpper parameters. The simulations are designed to evaluate the impact of seasonality and adaptive behavior on schistosomiasis and also predict the prevalence of S. haematobium and S. mansoni across Africa.
 
 The repository is organized into two main folders:
 
-1️⃣ aestivation/
+1. aestivation/
 
 Contains the simulation models with aestivation. It includes separate subfolders for S. haematobium and S. mansoni, each with the following structure:
 
@@ -26,7 +26,7 @@ Contains the simulation models with aestivation. It includes separate subfolders
 
  •	Contains the same folder structure and functionality as s.haematobium/, but for S. mansoni simulations.
 
-2️⃣ no_aestivation/
+2. no_aestivation/
 
 Contains the simulation models without aestivation. It also has separate subfolders for S. mansoni and S. haematobium, but with a simpler structure:
 
@@ -42,3 +42,7 @@ Contains the simulation models without aestivation. It also has separate subfold
  *	s.mansoni/
    
 	•	Contains the same folder structure and functionality as s.haematobium/, but for S. mansoni simulations.
+
+3. Clumpper_parameter/
+
+This code calculate the clummper parameters
